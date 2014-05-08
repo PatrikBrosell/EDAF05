@@ -34,12 +34,6 @@ public class ClosestPairs {
 	}
 
 	public static double fixStuffz(List<Point> px) {
-//		if (px.size() == 1) {
-//			return Double.MAX_VALUE;
-//		}
-//		if (px.size() == 2) {
-//			return px.get(0).distanceTo(px.get(1));
-//		}
 		if (px.size() <= 3) {
 			double dizt = Double.MAX_VALUE;
 			for(int i = 0; i < px.size(); i++) {
