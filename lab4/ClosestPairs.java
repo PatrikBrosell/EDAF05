@@ -22,11 +22,9 @@ public class ClosestPairs {
 		for (File file : listOfFiles) {
 			if (!file.getName().contains("close")) {
 				points = new ArrayList<Point>();
-				listx = new ArrayList<Point>();
-				listy = new ArrayList<Point>();
 				parse(file.getAbsolutePath());
 //				long start = System.nanoTime();
-				double result = fixStuffz(listx);
+				double result = fixStuffz(points);
 				System.out.print("../data/" + file.getName() + ": " + points.size() + " " + format(result));
 				System.out.println(/*"Time: " + (System.nanoTime() - start)/1000000*/);
 			}
@@ -48,28 +46,21 @@ public class ClosestPairs {
 			}
 		return dizt;
 		}
-
 		List<Point> qx = px.subList(0, px.size() / 2);
 		List<Point> rx = px.subList(px.size() / 2, px.size());
-
 		double l = qx.get(qx.size()-1).x;
-
 		double d1 = fixStuffz(qx);
 		double d2 = fixStuffz(rx);
-
 		double delta = Math.min(d1, d2);
-
 		ArrayList<Point> pxNew = new ArrayList<Point>();
 		for (Point p : px) {
-			if ((l - p.x) < delta /*|| (l + p.x) < delta*/) {
+			if ((l - p.x) < delta || (l + p.x) < delta) {
 				pxNew.add(p);
 			}
 		}
-
-		Collections.sort(pxNew, new Point()); // sorterad på y-koordinat
-
+		Collections.sort(pxNew, new Point()); // sortera efter y-koordinat
 		for (int i = 0; i < pxNew.size(); i++) {
-			for (int j = i+1; j < 17; j++) {
+			for (int j = i+1; j <= 16; j++) {
 				if (!(j >= pxNew.size())) {
 					double d = pxNew.get(i).distanceTo(pxNew.get(j));
 					if (delta > d) {
@@ -79,18 +70,14 @@ public class ClosestPairs {
 			}
 		}
 		return delta;
-
 	}
 
 	public static void parse(String filePath) throws FileNotFoundException {
-
 		Scanner in = new Scanner(new File(filePath));
 		String line = in.nextLine().trim();
-
 		while (!line.startsWith("NODE_COORD_SECTION")) {
 			line = in.nextLine();
 		}
-
 		while (in.hasNext()) {
 			line = in.nextLine().trim();
 			if (line.contains("EOF")) {
@@ -101,12 +88,8 @@ public class ClosestPairs {
 			double y = Double.parseDouble(line.split("\\s++")[2].trim());
 			Point p = new Point(x, y, id);
 			points.add(p);
-			listx.add(p);
-			listy.add(p);
 		}
-//		System.out.println(points.get(0) + "  " + points.get(points.size() - 1 ));
-		Collections.sort(listx);
-		Collections.sort(listy, new Point());
+		Collections.sort(points); // sortera efter x-koordinat
 	}
 
 	public static String format(double number) {
