@@ -7,44 +7,22 @@ public class Alignment {
 	public int delta;
 
 
-	public Alignment(String fix) throws Exception {
+	public Alignment(String blosumPath, String inFilePath) throws Exception {
 		int[][] A;
-		readMatrix("/usr/local/cs/edaf05/lab5/BLOSUM62.txt");
-		ArrayList<String> list = readInput("/usr/local/cs/edaf05/lab5/HbB_FASTAs.in");
-
-		if(fix.equals("fix")) {
-//			list.set(10, "Sea-Cucumber XGGTLAIQAQGDLTLAQKKIVRKTWHQLMRNKTSFVTDVFIRIFAYDPSAQNKFPQMAGMSASQLRSSRQMQAHAIRVSSIMSEYVEELDSDILPELLATLARTHDLNKVGADHYNLFAKVL"/*MEALQAELGSDFNEKTRD"*/);
-
-			list.set(10,"Sea-Cucumber XGGTLAIQAQGDLTLAQKKIVRKTWHQLMRNKTSFVTDVFIRIFAYDPSAQNKFPQMAGMSASQLRSSRQMQAHAIRVSSIMSEYVEELDSDILPELLATLARTHDLNKVGADHYNLFAKVLMEALQAELGSDFNEKTRDAWAKAFSVVQAVLLVKHG");
-
-
-		}
+		readMatrix(blosumPath);
+		ArrayList<String> list = readInput(inFilePath);
 
 		for(int i = 0; i < list.size(); i++) {
 			for(int j = i+1; j < list.size(); j++) {
 				String first = list.get(i);
 				String second = list.get(j);
-//				System.out.println(first);
-//				System.out.println(second);
 				A = alignment(first.split(" ")[1], second.split(" ")[1]);
 				System.out.println(first.split(" ")[0] + "--" + second.split(" ")[0] + ": " + A[A.length-1][A[0].length-1]);
-				traceback(A, first.split(" ")[1], second.split(" ")[1]);
+				String[] alignment = traceback(A, first.split(" ")[1], second.split(" ")[1]);
+				System.out.println(alignment[0]);
+				System.out.println(alignment[1]);
 			}
 		}
-
-
-
-
-
-/*		A = alignment("KQRK", "KQRIKAAKABK"); // -8 points
-		traceback(A, "KQRK", "KQRIKAAKABK");
-
-		A = alignment("KQRK", "KAK"); // 5 points
-		traceback(A, "KQRK", "KAK");
-
-		A = alignment("KQRIKAAKABK", "KAK");//  -18 points
-		traceback(A, "KQRIKAAKABK", "KAK");
-*/
 	}
 
 	public ArrayList<String> readInput(String filePath) throws Exception {
@@ -70,7 +48,7 @@ public class Alignment {
 		}
 
 
-		//sort stuff
+		//sort stuff just to match HbB_FASTAs.out
 
 		String[] strings = new String[13];
 		for(int i = 0; i < list.size(); i++) {
@@ -115,12 +93,6 @@ public class Alignment {
 			}
 		}
 		list = new ArrayList<String>(Arrays.asList(strings));
-//		System.out.println(list.toString());
-
-
-
-
-
 		return list;
 	}
 
@@ -181,11 +153,10 @@ public class Alignment {
 				A[i][j] = Math.max(Math.max(a,b),c);
 			}
 		}
-//	System.out.println(A[x.length()][y.length()]);
 	return A;
 	}
 
-	public void traceback(int[][] A, String x, String y) {
+	public String[] traceback(int[][] A, String x, String y) {
 		StringBuilder stringA = new StringBuilder();
 		StringBuilder stringB = new StringBuilder();
 		int m = x.length();
@@ -198,22 +169,16 @@ public class Alignment {
 			if(score == scoreDiagonal + matrix[x.charAt(m-1)-65][y.charAt(n-1)-65]) {
 				// match or missmatch
 				stringA = stringA.insert(0, x.charAt(m-1));
-//				System.out.println(stringA);
 				stringB = stringB.insert(0, y.charAt(n-1));
-//				System.out.println(stringB);
 				n--;
 				m--;
 			} else if (score == scoreLeft + delta ) {
 				// gap in sequence x
-//				System.out.println("gap y");
-
 				stringA = stringA.insert(0, x.charAt(m-1));
 				stringB = stringB.insert(0, '-');
 				m--;
 			} else if (score == scoreUp + delta) {
 				// gap in sequence y
-
-//				System.out.println("gap x");
 				stringA = stringA.insert(0, '-');
 				stringB = stringB.insert(0, y.charAt(n-1));
 				n--;
@@ -231,19 +196,11 @@ public class Alignment {
 			stringB = stringB.insert(0, y.charAt(n-1));
 			n--;
 		}
-
-		System.out.println(stringA.toString());
-		System.out.println(stringB.toString());
-
-
-
-
-
-
+		String[] alignment = {stringA.toString(), stringB.toString()};
+		return alignment;
 	}
 
-
 	public static void main(String[] args) throws Exception {
-		new Alignment(args[0]);
+		new Alignment(args[0], args[1]);
 	}
 }
